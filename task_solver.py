@@ -1,5 +1,5 @@
 from typing import Union
-import urllib
+import urllib.request
 from math import ceil
 
 
@@ -7,23 +7,25 @@ class TaskSolver:
     '''
     http://www.pythonchallenge.com/pc/def/linkedlist.php
     '''
+
     def __init__(self):
         self.url_base: str = 'http://www.pythonchallenge.com/pc/def/linkedlist.php'
         self.nothing_param: str = 'nothing'
-        self.request_count = 399
+        self.request_count = 400
+        self.count_normal = 0
         self.initial_id = 12345
         self.result = None
-    
+
     def get_id_from_response(self, response: str) -> Union[int, None]:
         response_split = response.split()
         try:
             result = int(response_split[-1])
         except ValueError:
-            result = None 
+            result = None
         return result
-    
+
     def url_from_id(self, url_id: int) -> str:
-        if not isinstance(url_id, (int, float)):
+        if not isinstance(url_id, int):
             raise ValueError('You should pass integer value as url param')
         url = f'{self.url_base}?{self.nothing_param}={url_id}'
         return url
@@ -36,15 +38,16 @@ class TaskSolver:
     def solve(self):
         current_id = self.initial_id
         for i in range(self.request_count):
-            if i >= 85:
+            self.count_normal += 1
+            if i == 85:
                 current_id /= 2
-                current_id = ceil(current_id)
+                current_id = int(current_id)
             try:
                 self.result = self.make_request(
                     self.url_from_id(current_id)
                 )
             except ValueError as exc:
                 print(i, self.result, exc)
-            print(f'{i} [{current_id}] -> {self.result}')
+            print(f'{i} [{current_id}] -> {self.result}, normal count: {self.count_normal}')
             current_id = self.get_id_from_response(self.result)
-    
+
